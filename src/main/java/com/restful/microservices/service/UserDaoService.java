@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class UserDaoService {
@@ -32,14 +33,19 @@ public class UserDaoService {
         return user;
     }
 
-    public User findOne(int id) {
+    public Optional<User> findOne(int id) {
         for (User user : users) {
             if (user.getId() == id) {
-                return user;
+                return Optional.of(user);
             }
         }
-        return null;
+        return Optional.empty();
     }
+
+    public void delete(User user){
+        users.remove(user);
+    }
+
 }
 
 
