@@ -33,13 +33,13 @@ public class UserDaoService {
         return user;
     }
 
-    public Optional<User> findOne(int id) {
+    public User findOne(int id) {
         for (User user : users) {
             if (user.getId() == id) {
-                return Optional.of(user);
+                return user;
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     public void delete(User user){
