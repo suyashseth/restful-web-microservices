@@ -1,41 +1,39 @@
 package com.restful.microservices.controller;
 
 import com.restful.microservices.dto.User;
+import com.restful.microservices.respo.UserRepo;
 import com.restful.microservices.service.UserDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.hateoas.EntityModel;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/users")
+public class UserJPAController {
+
 
     @Autowired
-    private UserDaoService service;
-
-    @Autowired
-    private MessageSource messageSource;
+    private UserRepo userRepo;
 
 
     @GetMapping("")
     public List<User> getAllUser() {
-        return service.findAll();
+        return userRepo.findAll();
     }
 
     @GetMapping("/{id}")
     public EntityModel<User> getUser(@PathVariable int id) {
-        User user = service.findOne(id);
+        User user = userRepo.getById(id);
         if (user == null) {
             throw new RuntimeException();
         }
@@ -47,7 +45,9 @@ public class UserController {
 
     @PostMapping("")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
-        User savedUser = service.save(user);
+
+        User user1 = new User(user.getId(), user.getName(), new Date());
+        User savedUser = userRepo.save(user);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -57,15 +57,15 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {
-        User user = service.findOne(id);
-        service.delete(user);
+        User user = userRepo.getById(id);
+        userRepo.delete(user);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/internationalize")
+    /*@GetMapping("/internationalize")
     public String getInternationalize(@RequestHeader(name = "Accept-Language", required = false) Locale locale) {
-        return messageSource.getMessage("good.morning.message", null, locale);
+        return userRepo.getMessage("good.morning.message", null, locale);
         //return "HelloWorld";
-    }
+    }*/
 
 }
